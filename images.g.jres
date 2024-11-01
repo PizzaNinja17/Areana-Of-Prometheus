@@ -124,6 +124,11 @@
         "mimeType": "image/x-mkcd-f4",
         "displayName": "selectScreenStars"
     },
+    "image23": {
+        "data": "hwQQABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAODuAAAA4O4AHhEOAADgFO4xOuEAAODUERMz6gAA4NQ9MaHqAADg1D0zo+oAAODUETM66gAA4BTuMTPqAADg7gA+ow4AAAAAAODuAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "powerPotion"
+    },
     "anim1": {
         "namespace": "myAnimations",
         "id": "anim1",

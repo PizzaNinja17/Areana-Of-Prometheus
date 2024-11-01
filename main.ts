@@ -1674,6 +1674,7 @@ function loadPlayer (num: number) {
                 playerOneDead = true
                 sprites.destroy(playerHitboxOne)
                 sprites.destroy(sprite)
+                sprites.destroyAllSpritesOfKind(SpriteKind.summonOne)
             }
         })
         if (playerOneSelection == 2) {
@@ -1697,6 +1698,7 @@ function loadPlayer (num: number) {
                 playerTwoDead = true
                 sprites.destroy(playerHitboxTwo)
                 sprites.destroy(sprite)
+                sprites.destroyAllSpritesOfKind(SpriteKind.summonTwo)
             }
         })
         if (playerTwoSelection == 2) {
@@ -1737,6 +1739,7 @@ function loadPlayer (num: number) {
                 playerThreeDead = true
                 sprites.destroy(playerHitboxThree)
                 sprites.destroy(sprite)
+                sprites.destroyAllSpritesOfKind(SpriteKind.summonThree)
             }
         })
         if (playerThreeSelection == 2) {
@@ -1777,6 +1780,7 @@ function loadPlayer (num: number) {
                 playerFourDead = true
                 sprites.destroy(playerHitboxFour)
                 sprites.destroy(sprite)
+                sprites.destroyAllSpritesOfKind(SpriteKind.summonFour)
             }
         })
         if (playerFourSelection == 2) {
@@ -2920,7 +2924,6 @@ sprites.onOverlap(SpriteKind.summonThree, SpriteKind.attackFour, function (sprit
 sprites.onOverlap(SpriteKind.summonThree, SpriteKind.attackOne, function (sprite, otherSprite) {
     damageSummon(playerOneSelection, otherSprite, sprite)
 })
-let tileRotation = 0
 let sine = 0
 let syctheSprite: Sprite = null
 let selectionSprite: Sprite = null
@@ -3019,29 +3022,7 @@ game.onUpdateInterval(50, function () {
     }
 })
 game.onUpdateInterval(300, function () {
-    if (tileRotation < 2) {
-        tileRotation += 1
-    } else {
-        tileRotation = 0
-    }
-    if (tileRotation == 0) {
-        for (let value of tiles.getTilesByType(assets.tile`tile12`)) {
-            tiles.setTileAt(value, assets.tile`tile8`)
-            tiles.setTileAt(value.getNeighboringLocation(CollisionDirection.Bottom), assets.tile`tile9`)
-        }
-    }
-    if (tileRotation == 1) {
-        for (let value of tiles.getTilesByType(assets.tile`tile8`)) {
-            tiles.setTileAt(value, assets.tile`tile10`)
-            tiles.setTileAt(value.getNeighboringLocation(CollisionDirection.Bottom), assets.tile`tile11`)
-        }
-    }
-    if (tileRotation == 2) {
-        for (let value of tiles.getTilesByType(assets.tile`tile10`)) {
-            tiles.setTileAt(value, assets.tile`tile12`)
-            tiles.setTileAt(value.getNeighboringLocation(CollisionDirection.Bottom), assets.tile`tile13`)
-        }
-    }
+	
 })
 game.onUpdateInterval(200, function () {
     if (playerExists(1)) {

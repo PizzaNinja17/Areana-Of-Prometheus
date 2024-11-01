@@ -1425,6 +1425,25 @@ ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 `;
+            case "image23":
+            case "powerPotion":return img`
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . e e e e e e e e . . . . 
+. . . . e 4 4 4 4 4 4 e . . . . 
+. . . . e 1 d d d d 1 e . . . . 
+. . . . . e 1 d d 1 e . . . . . 
+. . . . . e 1 3 3 1 e . . . . . 
+. . . . e 1 3 1 3 3 1 e . . . . 
+. . . e 1 3 1 3 3 3 3 3 e . . . 
+. . . e 1 a 3 1 3 a 3 3 e . . . 
+. . . e 1 3 3 a a 3 3 a e . . . 
+. . . . e 1 a a a a a e . . . . 
+. . . . . e e e e e e . . . . . 
+`;
         }
         return null;
     })
