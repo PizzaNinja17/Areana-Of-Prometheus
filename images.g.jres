@@ -124,8 +124,13 @@
         "mimeType": "image/x-mkcd-f4",
         "displayName": "selectScreenStars"
     },
+    "image24": {
+        "data": "hwQTAA8AAADw////AAAAAM/MzLv//w8A7+7u7vvu/gDv7u7u+8zMD7+7u7v7zMwP7+7u7vzu7g/v7u7u/O7uD+/u7v///+4P7+7uz8v87g/v7u7P+/zuD+/u7s/L/O4P7+7u////7g/v7u7u/O7uD+/u7u787u4Pz8zMzPzMzA/v7u7u/MzMD+/u7u787u4Pz8zMzP///wDw////AAAAAA==",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "powerBox"
+    },
     "image23": {
-        "data": "hwQQABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAODuAAAA4O4AHhEOAADgFO4xOuEAAODUERMz6gAA4NQ9MaHqAADg1D0zo+oAAODUETM66gAA4BTuMTPqAADg7gA+ow4AAAAAAODuAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+        "data": "hwQQABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPD/AAAA8P8AHxEPAADwFP9xdvEAAPDUERd39gAA8NR9cWH2AADw1H13Z/YAAPDUEXd29gAA8BT/cXf2AADw/wB/Zw8AAAAAAPD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
         "mimeType": "image/x-mkcd-f4",
         "displayName": "powerPotion"
     },

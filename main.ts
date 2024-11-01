@@ -18,6 +18,11 @@ namespace SpriteKind {
     export const hitboxFour = SpriteKind.create()
     export const attackFour = SpriteKind.create()
     export const summonFour = SpriteKind.create()
+    export const cubeBox = SpriteKind.create()
+    export const power = SpriteKind.create()
+}
+namespace StatusBarKind {
+    export const power = StatusBarKind.create()
 }
 sprites.onOverlap(SpriteKind.playerThree, SpriteKind.attackTwo, function (sprite, otherSprite) {
     if (!(invinceThree)) {
@@ -81,10 +86,10 @@ controller.player4.onButtonEvent(ControllerButton.A, ControllerButtonEvent.Relea
     }
 })
 sprites.onOverlap(SpriteKind.summonTwo, SpriteKind.attackOne, function (sprite, otherSprite) {
-    damageSummon(playerOneSelection, otherSprite, sprite)
+    damageSummon(playerOneSelection, otherSprite, sprite, statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerOneSprite).value)
 })
 sprites.onOverlap(SpriteKind.summonOne, SpriteKind.attackFour, function (sprite, otherSprite) {
-    damageSummon(playerFourSelection, otherSprite, sprite)
+    damageSummon(playerFourSelection, otherSprite, sprite, statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerFourSprite).value)
 })
 controller.player3.onButtonEvent(ControllerButton.B, ControllerButtonEvent.Pressed, function () {
     if (playerExists(3) && !(attackingThree)) {
@@ -104,6 +109,9 @@ controller.player3.onButtonEvent(ControllerButton.B, ControllerButtonEvent.Press
             }
         }
     }
+})
+sprites.onOverlap(SpriteKind.cubeBox, SpriteKind.attackThree, function (sprite, otherSprite) {
+    damageSummon(playerThreeSelection, otherSprite, sprite, statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerThreeSprite).value)
 })
 function playerHeldDirection (direction: string, playerNum: number) {
     if (playerNum == 1) {
@@ -287,7 +295,10 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.attackThree, function (sprite, o
     }
 })
 function loadMap (num: number) {
-    tiles.setCurrentTilemap(tilemap`level2`)
+    if (num == 1) {
+        tiles.setCurrentTilemap(tilemap`level2`)
+        basicTile = assets.tile`tile2`
+    }
     loadPlayer(1)
     if (playerTwoSelection != -1) {
         loadPlayer(2)
@@ -298,6 +309,7 @@ function loadMap (num: number) {
     if (playerFourSelection != -1) {
         loadPlayer(4)
     }
+    populateTiles()
 }
 controller.player4.onButtonEvent(ControllerButton.B, ControllerButtonEvent.Pressed, function () {
     if (playerExists(4) && !(attackingFour)) {
@@ -338,10 +350,10 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     }
 })
 sprites.onOverlap(SpriteKind.summonTwo, SpriteKind.attackThree, function (sprite, otherSprite) {
-    damageSummon(playerThreeSelection, otherSprite, sprite)
+    damageSummon(playerThreeSelection, otherSprite, sprite, statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerThreeSprite).value)
 })
 sprites.onOverlap(SpriteKind.summonFour, SpriteKind.attackTwo, function (sprite, otherSprite) {
-    damageSummon(playerTwoSelection, otherSprite, sprite)
+    damageSummon(playerTwoSelection, otherSprite, sprite, statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerTwoSprite).value)
 })
 sprites.onOverlap(SpriteKind.playerTwo, SpriteKind.attackFour, function (sprite, otherSprite) {
     if (!(invinceTwo)) {
@@ -468,10 +480,10 @@ function getSummonKind (num: number) {
     }
     return SpriteKind.summonOne
 }
-function damageSummon (attackerSelection: number, weaponSprite: Sprite, victumSprite: Sprite) {
+function damageSummon (attackerSelection: number, weaponSprite: Sprite, victumSprite: Sprite, power2: number) {
     if (attackTypeList[playerOneSelection] == 1) {
         sprites.destroy(weaponSprite)
-        damageTaken = damageList[attackerSelection] + Math.round(damageList[attackerSelection] * randint(-0.08, 0.1))
+        damageTaken = Math.round(damageList[attackerSelection] + power2 * 0.11 * damageList[attackerSelection] + damageList[attackerSelection] * randint(-0.08, 0.1))
         if (playerOneSelection == 1) {
             damageIndicator(victumSprite.x, victumSprite.y, damageTaken, "o")
         } else {
@@ -480,11 +492,21 @@ function damageSummon (attackerSelection: number, weaponSprite: Sprite, victumSp
         statusbars.getStatusBarAttachedTo(StatusBarKind.Health, victumSprite).value += damageTaken * -1
     }
     if (attackTypeList[playerOneSelection] == 2) {
-        damageTaken = damageList[attackerSelection] + Math.round(damageList[attackerSelection] * randint(-0.08, 0.1))
+        damageTaken = Math.round((damageList[attackerSelection] + power2 * 0.11 * damageList[attackerSelection] + damageList[attackerSelection] * randint(-0.08, 0.1)) * 0.4)
         damageIndicator(victumSprite.x, victumSprite.y, damageTaken, "")
         statusbars.getStatusBarAttachedTo(StatusBarKind.Health, victumSprite).value += damageTaken * -1
     }
+    if (attackTypeList[playerOneSelection] == 3) {
+        sprites.destroy(weaponSprite)
+        damageTaken = Math.round(damageList[attackerSelection] + power2 * 0.11 * damageList[attackerSelection] + damageList[attackerSelection] * randint(-0.08, 0.1))
+        statusbars.getStatusBarAttachedTo(StatusBarKind.Health, victumSprite).value += damageTaken * -1
+        damageIndicator(victumSprite.x, victumSprite.y, damageTaken, "b")
+    }
 }
+sprites.onOverlap(SpriteKind.playerTwo, SpriteKind.power, function (sprite, otherSprite) {
+    sprites.destroy(otherSprite)
+    increasePower(sprite, playerTwoSelection)
+})
 controller.player2.onButtonEvent(ControllerButton.A, ControllerButtonEvent.Released, function () {
     if (playerExists(2)) {
         if (playerTwoSelection == 2) {
@@ -517,6 +539,7 @@ sprites.onDestroyed(SpriteKind.attackThree, function (sprite) {
             tickPoisin(spriteutils.getSpritesWithin(SpriteKind.summonTwo, 60, sprite), playerThreeSprite, true)
             tickPoisin(spriteutils.getSpritesWithin(SpriteKind.playerFour, 60, sprite), playerThreeSprite, false)
             tickPoisin(spriteutils.getSpritesWithin(SpriteKind.summonFour, 60, sprite), playerThreeSprite, true)
+            tickPoisin(spriteutils.getSpritesWithin(SpriteKind.cubeBox, 60, sprite), playerThreeSprite, true)
         })
     }
 })
@@ -552,9 +575,9 @@ function playerAttributeArrays () {
     1650
     ]
     damageList = [
-    100,
+    120,
     400,
-    125,
+    119,
     95
     ]
     attackSpeedList = [
@@ -1261,7 +1284,7 @@ function shotgun (density: number, spread: number, userNum: number, userSelectio
 function damagePlayer (player2: Sprite, perpatrator: Sprite, victumNumber: number, attackSprite: Sprite, perpSelection: number) {
     if (attackTypeList[perpSelection] == 1) {
         sprites.destroy(attackSprite)
-        damageTaken = damageList[perpSelection] + Math.round(damageList[perpSelection] * randint(-0.08, 0.1))
+        damageTaken = Math.round(damageList[perpSelection] + statusbars.getStatusBarAttachedTo(StatusBarKind.power, perpatrator).value * 0.11 * damageList[perpSelection] + damageList[perpSelection] * randint(-0.08, 0.1))
         if (perpSelection == 1) {
             damageIndicator(player2.x, player2.y, damageTaken, "o")
         } else {
@@ -1298,7 +1321,7 @@ function damagePlayer (player2: Sprite, perpatrator: Sprite, victumNumber: numbe
         }
     }
     if (attackTypeList[perpSelection] == 2) {
-        damageTaken = damageList[perpSelection] + Math.round(damageList[perpSelection] * randint(-0.08, 0.1))
+        damageTaken = Math.round(damageList[perpSelection] + statusbars.getStatusBarAttachedTo(StatusBarKind.power, perpatrator).value * 0.11 * damageList[perpSelection] + damageList[perpSelection] * randint(-0.08, 0.1))
         damageIndicator(player2.x, player2.y, damageTaken, "")
         statusbars.getStatusBarAttachedTo(StatusBarKind.Health, player2).value += damageTaken * -1
         if (victumNumber == 1) {
@@ -1332,13 +1355,13 @@ function damagePlayer (player2: Sprite, perpatrator: Sprite, victumNumber: numbe
     }
     if (attackTypeList[perpSelection] == 3) {
         sprites.destroy(attackSprite)
-        damageTaken = damageList[perpSelection] + Math.round(damageList[perpSelection] * randint(-0.08, 0.1))
+        damageTaken = Math.round(damageList[perpSelection] + statusbars.getStatusBarAttachedTo(StatusBarKind.power, perpatrator).value * 0.11 * damageList[perpSelection] + damageList[perpSelection] * randint(-0.08, 0.1))
         damageIndicator(player2.x, player2.y, damageTaken, "b")
         statusbars.getStatusBarAttachedTo(StatusBarKind.Health, player2).value += damageTaken * -1
     }
 }
 sprites.onOverlap(SpriteKind.summonFour, SpriteKind.attackThree, function (sprite, otherSprite) {
-    damageSummon(playerThreeSelection, otherSprite, sprite)
+    damageSummon(playerThreeSelection, otherSprite, sprite, statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerThreeSprite).value)
 })
 sprites.onOverlap(SpriteKind.playerFour, SpriteKind.attackTwo, function (sprite, otherSprite) {
     if (!(inviceFour)) {
@@ -1346,24 +1369,23 @@ sprites.onOverlap(SpriteKind.playerFour, SpriteKind.attackTwo, function (sprite,
     }
 })
 function tickCamrea () {
-    playerCount = 4
-    if (!(playerExists(1))) {
-        playerCount += -1
-    }
-    if (!(playerExists(2))) {
-        playerCount += -1
-    }
-    if (!(playerExists(3))) {
-        playerCount += -1
-    }
-    if (!(playerExists(4))) {
-        playerCount += -1
+    playerCount = 0
+    for (let index = 0; index <= 3; index++) {
+        if (playerExists(index + 1)) {
+            playerCount += 1
+        }
     }
     if (playerCount == 3) {
-        if (!(playerExists(1))) {
+        if (!(playerExists(4))) {
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera4, splitScreen.CameraRegion.VerticalLeftThird)
             splitScreen.setCameraRegion(splitScreen.Camera.Camera1, splitScreen.CameraRegion.VerticalLeftThird)
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera2, splitScreen.CameraRegion.VerticalLeftThird)
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera3, splitScreen.CameraRegion.VerticalMiddleThird)
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera2, splitScreen.CameraRegion.VerticalMiddleThird)
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera3, splitScreen.CameraRegion.VerticalRightThird)
+        }
+        if (!(playerExists(3))) {
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera3, splitScreen.CameraRegion.VerticalLeftThird)
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera1, splitScreen.CameraRegion.VerticalLeftThird)
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera2, splitScreen.CameraRegion.VerticalMiddleThird)
             splitScreen.setCameraRegion(splitScreen.Camera.Camera4, splitScreen.CameraRegion.VerticalRightThird)
         }
         if (!(playerExists(2))) {
@@ -1372,53 +1394,47 @@ function tickCamrea () {
             splitScreen.setCameraRegion(splitScreen.Camera.Camera3, splitScreen.CameraRegion.VerticalMiddleThird)
             splitScreen.setCameraRegion(splitScreen.Camera.Camera4, splitScreen.CameraRegion.VerticalRightThird)
         }
-        if (!(playerExists(3))) {
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera3, splitScreen.CameraRegion.VerticalLeftThird)
+        if (!(playerExists(1))) {
             splitScreen.setCameraRegion(splitScreen.Camera.Camera1, splitScreen.CameraRegion.VerticalLeftThird)
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera2, splitScreen.CameraRegion.VerticalMiddleThird)
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera2, splitScreen.CameraRegion.VerticalLeftThird)
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera3, splitScreen.CameraRegion.VerticalMiddleThird)
             splitScreen.setCameraRegion(splitScreen.Camera.Camera4, splitScreen.CameraRegion.VerticalRightThird)
-        }
-        if (!(playerExists(4))) {
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera4, splitScreen.CameraRegion.VerticalLeftThird)
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera1, splitScreen.CameraRegion.VerticalLeftThird)
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera2, splitScreen.CameraRegion.VerticalMiddleThird)
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera3, splitScreen.CameraRegion.VerticalRightThird)
         }
     }
     if (playerCount == 2) {
-        if (!(playerExists(1)) && !(playerExists(2))) {
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera1, splitScreen.CameraRegion.VerticalLeftHalf)
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera2, splitScreen.CameraRegion.VerticalLeftHalf)
+        if (playerExists(1) && playerExists(2)) {
             splitScreen.setCameraRegion(splitScreen.Camera.Camera3, splitScreen.CameraRegion.VerticalLeftHalf)
             splitScreen.setCameraRegion(splitScreen.Camera.Camera4, splitScreen.CameraRegion.VerticalRightHalf)
-        }
-        if (!(playerExists(1)) && !(playerExists(3))) {
             splitScreen.setCameraRegion(splitScreen.Camera.Camera1, splitScreen.CameraRegion.VerticalLeftHalf)
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera3, splitScreen.CameraRegion.VerticalLeftHalf)
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera2, splitScreen.CameraRegion.VerticalRightHalf)
+        }
+        if (playerExists(1) && playerExists(3)) {
             splitScreen.setCameraRegion(splitScreen.Camera.Camera2, splitScreen.CameraRegion.VerticalLeftHalf)
             splitScreen.setCameraRegion(splitScreen.Camera.Camera4, splitScreen.CameraRegion.VerticalRightHalf)
-        }
-        if (!(playerExists(1)) && !(playerExists(4))) {
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera1, splitScreen.CameraRegion.VerticalLeftHalf)
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera4, splitScreen.CameraRegion.VerticalLeftHalf)
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera2, splitScreen.CameraRegion.VerticalLeftHalf)
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera3, splitScreen.CameraRegion.VerticalRightHalf)
-        }
-        if (!(playerExists(2)) && !(playerExists(3))) {
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera2, splitScreen.CameraRegion.VerticalLeftHalf)
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera3, splitScreen.CameraRegion.VerticalLeftHalf)
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera1, splitScreen.CameraRegion.VerticalLeftHalf)
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera4, splitScreen.CameraRegion.VerticalRightHalf)
-        }
-        if (!(playerExists(2)) && !(playerExists(4))) {
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera2, splitScreen.CameraRegion.VerticalLeftHalf)
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera4, splitScreen.CameraRegion.VerticalLeftHalf)
             splitScreen.setCameraRegion(splitScreen.Camera.Camera1, splitScreen.CameraRegion.VerticalLeftHalf)
             splitScreen.setCameraRegion(splitScreen.Camera.Camera3, splitScreen.CameraRegion.VerticalRightHalf)
         }
-        if (!(playerExists(3)) && !(playerExists(4))) {
-            splitScreen.setCameraRegion(splitScreen.Camera.Camera1, splitScreen.CameraRegion.VerticalLeftHalf)
+        if (playerExists(1) && playerExists(4)) {
             splitScreen.setCameraRegion(splitScreen.Camera.Camera2, splitScreen.CameraRegion.VerticalLeftHalf)
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera3, splitScreen.CameraRegion.VerticalRightHalf)
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera1, splitScreen.CameraRegion.VerticalLeftHalf)
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera4, splitScreen.CameraRegion.VerticalRightHalf)
+        }
+        if (playerExists(2) && playerExists(3)) {
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera1, splitScreen.CameraRegion.VerticalLeftHalf)
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera4, splitScreen.CameraRegion.VerticalRightHalf)
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera2, splitScreen.CameraRegion.VerticalLeftHalf)
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera3, splitScreen.CameraRegion.VerticalRightHalf)
+        }
+        if (playerExists(2) && playerExists(4)) {
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera1, splitScreen.CameraRegion.VerticalLeftHalf)
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera3, splitScreen.CameraRegion.VerticalRightHalf)
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera2, splitScreen.CameraRegion.VerticalLeftHalf)
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera4, splitScreen.CameraRegion.VerticalRightHalf)
+        }
+        if (playerExists(3) && playerExists(4)) {
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera1, splitScreen.CameraRegion.VerticalLeftHalf)
+            splitScreen.setCameraRegion(splitScreen.Camera.Camera2, splitScreen.CameraRegion.VerticalRightHalf)
             splitScreen.setCameraRegion(splitScreen.Camera.Camera3, splitScreen.CameraRegion.VerticalLeftHalf)
             splitScreen.setCameraRegion(splitScreen.Camera.Camera4, splitScreen.CameraRegion.VerticalRightHalf)
         }
@@ -1430,6 +1446,9 @@ function tickCamrea () {
         splitScreen.setCameraRegion(splitScreen.Camera.Camera4, splitScreen.CameraRegion.BottomRight)
     }
 }
+sprites.onOverlap(SpriteKind.cubeBox, SpriteKind.attackTwo, function (sprite, otherSprite) {
+    damageSummon(playerTwoSelection, otherSprite, sprite, statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerTwoSprite).value)
+})
 function dash (state: Sprite, hitbox: Sprite, playerSelection: number, userNum: number) {
     if (userNum == 1) {
         controller.moveSprite(hitbox, 0, 0)
@@ -1495,7 +1514,7 @@ sprites.onOverlap(SpriteKind.playerThree, SpriteKind.attackOne, function (sprite
     }
 })
 function attachPlayerStatusbars (player2: Sprite, selection: number) {
-    for (let index = 0; index <= 2; index++) {
+    for (let index = 0; index <= 3; index++) {
         if (index == 0) {
             statusbar = statusbars.create(20, 1, StatusBarKind.Energy)
             statusbar.setColor(5, 15, 1)
@@ -1516,6 +1535,13 @@ function attachPlayerStatusbars (player2: Sprite, selection: number) {
             statusbar.value = healthList[selection]
             statusbar.attachToSprite(player2, 4, 0)
         }
+        if (index == 3) {
+            statusbar = statusbars.create(20, 1, StatusBarKind.power)
+            statusbar.setColor(7, 0, 0)
+            statusbar.max = 5
+            statusbar.value = 0
+            statusbar.attachToSprite(player2, 7, 0)
+        }
         statusbar.setStatusBarFlag(StatusBarFlag.SmoothTransition, true)
     }
 }
@@ -1534,6 +1560,7 @@ sprites.onDestroyed(SpriteKind.attackOne, function (sprite) {
             tickPoisin(spriteutils.getSpritesWithin(SpriteKind.summonThree, 60, sprite), playerOneSprite, true)
             tickPoisin(spriteutils.getSpritesWithin(SpriteKind.playerFour, 60, sprite), playerOneSprite, false)
             tickPoisin(spriteutils.getSpritesWithin(SpriteKind.summonFour, 60, sprite), playerOneSprite, true)
+            tickPoisin(spriteutils.getSpritesWithin(SpriteKind.cubeBox, 60, sprite), playerOneSprite, true)
         })
     }
 })
@@ -1543,12 +1570,12 @@ function summonPosinFeild (x: number, y: number) {
     propSprite.z = 1
     propSprite.setPosition(x, y)
     extraEffects.createSpreadEffectOnAnchor(propSprite, poisinEffect, 4400, 120, 30)
-    extraEffects.createSpreadEffectOnAnchor(propSprite, poisinRingEffect, 4400, 60, 80)
+    extraEffects.createSpreadEffectOnAnchor(propSprite, poisinRingEffect, 4400, 60, 65)
     propSprite.lifespan = 4000
 }
 function tickPoisin (victumsArray: Sprite[], perpetrator: Sprite, summon: boolean) {
     for (let value of victumsArray) {
-        damageTaken = randint(14, randint(14, 17))
+        damageTaken = randint(14, randint(14, 17)) + Math.round(randint(14, randint(14, 17)) * (statusbars.getStatusBarAttachedTo(StatusBarKind.power, perpetrator).value * 0.11))
         statusbars.getStatusBarAttachedTo(StatusBarKind.Health, value).value += damageTaken * -1
         damageIndicator(value.x, value.y, damageTaken, "p")
         if (!(summon)) {
@@ -1649,6 +1676,23 @@ sprites.onOverlap(SpriteKind.cursor, SpriteKind.startButton, function (sprite, o
         }
     }
 })
+function populateTiles () {
+    for (let value of tiles.getTilesByType(assets.tile`myTile1`)) {
+        propSprite = sprites.create(assets.image`powerBox`, SpriteKind.cubeBox)
+        tiles.placeOnTile(propSprite, value)
+        tiles.setTileAt(value, basicTile)
+        propSprite.y += -1
+        propSprite.x += 1
+        enemyStatusBar = statusbars.create(21, 4, StatusBarKind.Health)
+        enemyStatusBar.setStatusBarFlag(StatusBarFlag.SmoothTransition, true)
+        enemyStatusBar.setColor(2, 1, 1)
+        enemyStatusBar.setBarBorder(1, 15)
+        enemyStatusBar.attachToSprite(propSprite, 1, 0)
+        enemyStatusBar.max = 1300
+        enemyStatusBar.value = 1300
+        enemeyAddMortal(propSprite)
+    }
+}
 sprites.onOverlap(SpriteKind.playerTwo, SpriteKind.attackThree, function (sprite, otherSprite) {
     if (!(invinceTwo)) {
         playerAttacked(sprite, otherSprite, 2, playerThreeSelection, playerThreeSprite, playerTwoSelection)
@@ -1798,6 +1842,7 @@ sprites.onDestroyed(SpriteKind.attackTwo, function (sprite) {
             tickPoisin(spriteutils.getSpritesWithin(SpriteKind.summonThree, 60, sprite), playerTwoSprite, true)
             tickPoisin(spriteutils.getSpritesWithin(SpriteKind.playerFour, 60, sprite), playerTwoSprite, false)
             tickPoisin(spriteutils.getSpritesWithin(SpriteKind.summonFour, 60, sprite), playerTwoSprite, true)
+            tickPoisin(spriteutils.getSpritesWithin(SpriteKind.cubeBox, 60, sprite), playerTwoSprite, true)
         })
     }
 })
@@ -1890,6 +1935,7 @@ sprites.onDestroyed(SpriteKind.attackFour, function (sprite) {
             tickPoisin(spriteutils.getSpritesWithin(SpriteKind.summonTwo, 60, sprite), playerFourSprite, true)
             tickPoisin(spriteutils.getSpritesWithin(SpriteKind.playerThree, 60, sprite), playerFourSprite, false)
             tickPoisin(spriteutils.getSpritesWithin(SpriteKind.summonThree, 60, sprite), playerFourSprite, true)
+            tickPoisin(spriteutils.getSpritesWithin(SpriteKind.cubeBox, 60, sprite), playerFourSprite, true)
         })
     }
 })
@@ -1900,6 +1946,13 @@ controller.player3.onButtonEvent(ControllerButton.A, ControllerButtonEvent.Relea
         }
     }
 })
+function enemeyAddMortal (enemSprite: Sprite) {
+    spriteutils.onSpriteUpdateInterval(enemSprite, 50, function (sprite) {
+        if (statusbars.getStatusBarAttachedTo(StatusBarKind.Health, sprite).value == 0) {
+            sprites.destroy(sprite)
+        }
+    })
+}
 function syctheUlimate (hitbox: Sprite, playerNum: number) {
     for (let index = 0; index <= 8; index++) {
         attackSprite = sprites.create(assets.image`syctheImage`, SpriteKind.attackOne)
@@ -1979,6 +2032,13 @@ function syctheUlimate (hitbox: Sprite, playerNum: number) {
         })
     }
 }
+sprites.onOverlap(SpriteKind.cubeBox, SpriteKind.attackFour, function (sprite, otherSprite) {
+    damageSummon(playerFourSelection, otherSprite, sprite, statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerFourSprite).value)
+})
+sprites.onOverlap(SpriteKind.playerFour, SpriteKind.power, function (sprite, otherSprite) {
+    sprites.destroy(otherSprite)
+    increasePower(sprite, playerFourSelection)
+})
 function selectScreen () {
     inMenu = true
     for (let index = 0; index <= 3; index++) {
@@ -2516,6 +2576,10 @@ sprites.onOverlap(SpriteKind.cursor, SpriteKind.playerSelect, function (sprite, 
         }
     }
 })
+sprites.onOverlap(SpriteKind.playerThree, SpriteKind.power, function (sprite, otherSprite) {
+    sprites.destroy(otherSprite)
+    increasePower(sprite, playerThreeSelection)
+})
 sprites.onOverlap(SpriteKind.Player, SpriteKind.attackTwo, function (sprite, otherSprite) {
     if (!(invinceOne)) {
         playerAttacked(sprite, otherSprite, 1, playerTwoSelection, playerTwoSprite, playerOneSelection)
@@ -2597,7 +2661,7 @@ function playerAttacked (attacked: Sprite, weaponSprite: Sprite, victumNum: numb
     statusbars.getStatusBarAttachedTo(StatusBarKind.Magic, attacked).value += superChargeList[victumSelection] / 3
 }
 sprites.onOverlap(SpriteKind.summonThree, SpriteKind.attackTwo, function (sprite, otherSprite) {
-    damageSummon(playerTwoSelection, otherSprite, sprite)
+    damageSummon(playerTwoSelection, otherSprite, sprite, statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerTwoSprite).value)
 })
 function loadEffects () {
     poisinEffect = extraEffects.createCustomSpreadEffectData(
@@ -2657,6 +2721,28 @@ function loadEffects () {
     29,
     200
     )
+    powerPotionEffect = extraEffects.createCustomSpreadEffectData(
+    [
+    1,
+    7,
+    7,
+    7,
+    6,
+    6
+    ],
+    false,
+    extraEffects.createPresetSizeTable(ExtraEffectPresetShape.Twinkle),
+    extraEffects.createPercentageRange(100, 100),
+    extraEffects.createPercentageRange(100, 100),
+    extraEffects.createTimeRange(500, 1000),
+    0,
+    -40,
+    extraEffects.createPercentageRange(50, 100),
+    5,
+    0,
+    200
+    )
+    powerPotionEffect.z = -1
     thunderEffect = extraEffects.createCustomSpreadEffectData(
     [
     1,
@@ -2735,9 +2821,38 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.attackFour, function (sprite, ot
         playerAttacked(sprite, otherSprite, 1, playerFourSelection, playerFourSprite, playerOneSelection)
     }
 })
-sprites.onOverlap(SpriteKind.summonTwo, SpriteKind.attackFour, function (sprite, otherSprite) {
-    damageSummon(playerFourSelection, otherSprite, sprite)
+sprites.onOverlap(SpriteKind.cubeBox, SpriteKind.attackOne, function (sprite, otherSprite) {
+    damageSummon(playerOneSelection, otherSprite, sprite, statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerOneSprite).value)
 })
+sprites.onOverlap(SpriteKind.summonTwo, SpriteKind.attackFour, function (sprite, otherSprite) {
+    damageSummon(playerFourSelection, otherSprite, sprite, statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerFourSprite).value)
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.power, function (sprite, otherSprite) {
+    sprites.destroy(otherSprite)
+    increasePower(sprite, playerOneSelection)
+})
+sprites.onDestroyed(SpriteKind.cubeBox, function (sprite) {
+    powerPotionSprite = sprites.create(assets.image`powerPotion`, SpriteKind.prop)
+    powerPotionSprite.setPosition(sprite.x - 1, sprite.y)
+    powerPotionSprite.lifespan = 2000
+    spriteutils.onSpriteUpdateInterval(powerPotionSprite, 500, function (sprite) {
+        extraEffects.createSpreadEffectAt(powerPotionEffect, sprite.x, sprite.y - 2, 2000, 0, 8)
+        if (sprite.lifespan < 1800) {
+            sprite.setKind(SpriteKind.power)
+            sprite.lifespan = 2000
+        }
+    })
+})
+function increasePower (playerSprite: Sprite, playerSelection: number) {
+    if (statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerSprite).value != statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerSprite).max) {
+        statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerSprite).value += 1
+        extraEffects.createSpreadEffectAt(powerPotionEffect, playerSprite.x, playerSprite.y, 200, 8, 100)
+        statusbars.getStatusBarAttachedTo(StatusBarKind.Health, playerSprite).max += Math.round(healthList[playerSelection] * 0.09)
+        statusbars.getStatusBarAttachedTo(StatusBarKind.Health, playerSprite).value += Math.round(healthList[playerSelection] * 0.09)
+    } else {
+        extraEffects.createSpreadEffectAt(extraEffects.createSingleColorSpreadEffectData(2, ExtraEffectPresetShape.Spark), playerSprite.x, playerSprite.y, 200, 29, 100)
+    }
+}
 function equipSycthe (wieldingSprite: Sprite, playerNumber: number) {
     for (let index = 0; index < 3; index++) {
         syctheSprite = sprites.create(assets.image`syctheImage`, SpriteKind.prop)
@@ -2905,13 +3020,13 @@ function equipSycthe (wieldingSprite: Sprite, playerNumber: number) {
     }
 }
 sprites.onOverlap(SpriteKind.summonOne, SpriteKind.attackThree, function (sprite, otherSprite) {
-    damageSummon(playerThreeSelection, otherSprite, sprite)
+    damageSummon(playerThreeSelection, otherSprite, sprite, statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerThreeSprite).value)
 })
 sprites.onOverlap(SpriteKind.summonOne, SpriteKind.attackTwo, function (sprite, otherSprite) {
-    damageSummon(playerTwoSelection, otherSprite, sprite)
+    damageSummon(playerTwoSelection, otherSprite, sprite, statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerTwoSprite).value)
 })
 sprites.onOverlap(SpriteKind.summonFour, SpriteKind.attackOne, function (sprite, otherSprite) {
-    damageSummon(playerOneSelection, otherSprite, sprite)
+    damageSummon(playerOneSelection, otherSprite, sprite, statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerOneSprite).value)
 })
 sprites.onOverlap(SpriteKind.playerThree, SpriteKind.attackFour, function (sprite, otherSprite) {
     if (!(invinceThree)) {
@@ -2919,18 +3034,21 @@ sprites.onOverlap(SpriteKind.playerThree, SpriteKind.attackFour, function (sprit
     }
 })
 sprites.onOverlap(SpriteKind.summonThree, SpriteKind.attackFour, function (sprite, otherSprite) {
-    damageSummon(playerFourSelection, otherSprite, sprite)
+    damageSummon(playerFourSelection, otherSprite, sprite, statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerFourSprite).value)
 })
 sprites.onOverlap(SpriteKind.summonThree, SpriteKind.attackOne, function (sprite, otherSprite) {
-    damageSummon(playerOneSelection, otherSprite, sprite)
+    damageSummon(playerOneSelection, otherSprite, sprite, statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerOneSprite).value)
 })
 let sine = 0
 let syctheSprite: Sprite = null
+let powerPotionSprite: Sprite = null
+let powerPotionEffect: SpreadEffectData = null
 let selectionSprite: Sprite = null
 let menuText: TextSprite = null
 let startButton: Sprite = null
 let cursorSprite: Sprite = null
 let hatTeleportEffect: SpreadEffectData = null
+let enemyStatusBar: StatusBarSprite = null
 let damageText: TextSprite = null
 let poisinRingEffect: SpreadEffectData = null
 let statusbar: StatusBarSprite = null
@@ -2959,10 +3077,9 @@ let attackAnimList: Image[][] = []
 let attackTypeList: number[] = []
 let invinceTwo = false
 let playerHitboxOne: Sprite = null
-let playerOneSprite: Sprite = null
 let attackingOne = false
 let playerHitboxFour: Sprite = null
-let playerFourSprite: Sprite = null
+let basicTile: Image = null
 let invinceOne = false
 let summonerBar: StatusBarSprite = null
 let attackSprite: Sprite = null
@@ -2971,6 +3088,8 @@ let attackingTwo = false
 let playerHitboxThree: Sprite = null
 let playerThreeSprite: Sprite = null
 let attackingThree = false
+let playerFourSprite: Sprite = null
+let playerOneSprite: Sprite = null
 let attackingFour = false
 let inMenu = false
 let poisinEffect: SpreadEffectData = null
@@ -3001,28 +3120,29 @@ playerFourSelection = -1
 playerFourDead = false
 selectScreen()
 game.onUpdate(function () {
+    tickCamrea()
     if (playerExists(1)) {
         playerOneSprite.setPosition(playerHitboxOne.x, playerHitboxOne.y)
+        splitScreen.cameraFollowSprite(splitScreen.Camera.Camera1, playerHitboxOne)
     }
     if (playerExists(2)) {
         playerTwoSprite.setPosition(playerHitboxTwo.x, playerHitboxTwo.y)
+        splitScreen.cameraFollowSprite(splitScreen.Camera.Camera2, playerHitboxTwo)
     }
     if (playerExists(3)) {
         playerThreeSprite.setPosition(playerHitboxThree.x, playerHitboxThree.y)
+        splitScreen.cameraFollowSprite(splitScreen.Camera.Camera3, playerHitboxThree)
     }
     if (playerExists(4)) {
         playerFourSprite.setPosition(playerHitboxFour.x, playerHitboxFour.y)
+        splitScreen.cameraFollowSprite(splitScreen.Camera.Camera4, playerHitboxFour)
     }
-    tickCamrea()
 })
 game.onUpdateInterval(50, function () {
     sine += 15
     if (sine > 259) {
         sine = 0
     }
-})
-game.onUpdateInterval(300, function () {
-	
 })
 game.onUpdateInterval(200, function () {
     if (playerExists(1)) {
