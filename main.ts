@@ -1445,6 +1445,22 @@ function tickCamrea () {
         splitScreen.setCameraRegion(splitScreen.Camera.Camera3, splitScreen.CameraRegion.BottomLeft)
         splitScreen.setCameraRegion(splitScreen.Camera.Camera4, splitScreen.CameraRegion.BottomRight)
     }
+    splitScreen.setSplitScreenEnabled(true)
+    if (playerCount == 1) {
+        splitScreen.setSplitScreenEnabled(false)
+        if (playerExists(1)) {
+            scene.cameraFollowSprite(playerHitboxOne)
+        }
+        if (playerExists(2)) {
+            scene.cameraFollowSprite(playerHitboxTwo)
+        }
+        if (playerExists(3)) {
+            scene.cameraFollowSprite(playerHitboxThree)
+        }
+        if (playerExists(4)) {
+            scene.cameraFollowSprite(playerHitboxFour)
+        }
+    }
 }
 sprites.onOverlap(SpriteKind.cubeBox, SpriteKind.attackTwo, function (sprite, otherSprite) {
     damageSummon(playerTwoSelection, otherSprite, sprite, statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerTwoSprite).value)
@@ -1544,6 +1560,9 @@ function attachPlayerStatusbars (player2: Sprite, selection: number) {
         }
         statusbar.setStatusBarFlag(StatusBarFlag.SmoothTransition, true)
     }
+}
+function getBlock (harrow: boolean, row: number, col: number) {
+	
 }
 sprites.onOverlap(SpriteKind.playerFour, SpriteKind.attackOne, function (sprite, otherSprite) {
     if (!(inviceFour)) {
@@ -3039,6 +3058,8 @@ sprites.onOverlap(SpriteKind.summonThree, SpriteKind.attackFour, function (sprit
 sprites.onOverlap(SpriteKind.summonThree, SpriteKind.attackOne, function (sprite, otherSprite) {
     damageSummon(playerOneSelection, otherSprite, sprite, statusbars.getStatusBarAttachedTo(StatusBarKind.power, playerOneSprite).value)
 })
+let harrowBlocks: Image[] = []
+let unCorruptedBlocks: Image[] = []
 let sine = 0
 let syctheSprite: Sprite = null
 let powerPotionSprite: Sprite = null
@@ -3136,6 +3157,58 @@ game.onUpdate(function () {
     if (playerExists(4)) {
         playerFourSprite.setPosition(playerHitboxFour.x, playerHitboxFour.y)
         splitScreen.cameraFollowSprite(splitScreen.Camera.Camera4, playerHitboxFour)
+    }
+})
+game.onUpdateInterval(50, function () {
+    unCorruptedBlocks = [
+    assets.tile`tile2`,
+    assets.tile`tile18`,
+    assets.tile`myTile0`,
+    assets.tile`tile22`,
+    assets.tile`tile23`,
+    assets.tile`tile27`,
+    assets.tile`tile31`,
+    assets.tile`tile32`,
+    assets.tile`tile35`,
+    assets.tile`tile32`,
+    assets.tile`tile34`,
+    assets.tile`tile14`,
+    assets.tile`tile15`,
+    assets.tile`tile16`,
+    assets.tile`tile30`
+    ]
+    harrowBlocks = [
+    assets.tile`tile4`,
+    assets.tile`tile10`,
+    assets.tile`myTile2`,
+    assets.tile`tile12`,
+    assets.tile`tile13`,
+    assets.tile`tile28`,
+    assets.tile`tile29`,
+    assets.tile`tile41`,
+    assets.tile`tile43`,
+    assets.tile`tile42`,
+    assets.tile`tile44`,
+    assets.tile`tile45`,
+    assets.tile`tile46`,
+    assets.tile`tile47`,
+    assets.tile`tile48`
+    ]
+    for (let value2 of harrowBlocks) {
+        for (let value of tiles.getTilesByType(value2)) {
+            if (tiles.tileAtLocationEquals(value.getNeighboringLocation(CollisionDirection.Left), assets.tile`tile2`)) {
+                tiles.setTileAt(value.getNeighboringLocation(CollisionDirection.Left), assets.tile`tile4`)
+            }
+            if (tiles.tileAtLocationEquals(value.getNeighboringLocation(CollisionDirection.Top), assets.tile`tile2`)) {
+                tiles.setTileAt(value.getNeighboringLocation(CollisionDirection.Top), assets.tile`tile4`)
+            }
+            if (tiles.tileAtLocationEquals(value.getNeighboringLocation(CollisionDirection.Right), assets.tile`tile2`)) {
+                tiles.setTileAt(value.getNeighboringLocation(CollisionDirection.Right), assets.tile`tile4`)
+            }
+            if (tiles.tileAtLocationEquals(value.getNeighboringLocation(CollisionDirection.Bottom), assets.tile`tile2`)) {
+                tiles.setTileAt(value.getNeighboringLocation(CollisionDirection.Bottom), assets.tile`tile4`)
+            }
+        }
     }
 })
 game.onUpdateInterval(50, function () {
