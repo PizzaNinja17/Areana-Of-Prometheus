@@ -1,0 +1,59 @@
+{
+    "name": "Areana Of Prometheus",
+    "description": "",
+    "dependencies": {
+        "device": "*",
+        "Timers": "github:microsoft/arcade-timers#v1.1.0",
+        "arcade-background-scroll": "github:microsoft/arcade-background-scroll#v0.1.2",
+        "arcade-sprite-util": "github:jwunderl/arcade-sprite-util#v0.4.1",
+        "arcade-text": "github:microsoft/arcade-text#v1.3.0",
+        "Color Fading": "github:jwunderl/pxt-color#v0.2.3",
+        "arcade-character-animations": "github:microsoft/arcade-character-animations#v0.0.2",
+        "Extra Effects": "github:alexszeto/extra-effects#v3.1.0",
+        "arcade-split-screen": "github:riknoll/arcade-split-screen#v0.0.3",
+        "pxt-status-bar": "github:jwunderl/pxt-status-bar#v0.4.2"
+    },
+    "files": [
+        "main.blocks",
+        "main.ts",
+        "README.md",
+        "assets.json",
+        "images.g.jres",
+        "images.g.ts",
+        "tilemap.g.jres",
+        "tilemap.g.ts"
+    ],
+    "testFiles": [
+        "test.ts"
+    ],
+    "targetVersions": {
+        "branch": "v1.12.56",
+        "tag": "v1.12.56",
+        "commits": "https://github.com/microsoft/pxt-arcade/commits/415ef2df2ac233e8d214fef5f4ea26f2f5de232a",
+        "target": "1.12.56",
+        "pxt": "8.5.67",
+        "targetId": "arcade"
+    },
+    "supportedTargets": [
+        "arcade"
+    ],
+    "preferredEditor": "blocksprj",
+    "palette": [
+        "#000000",
+        "#FFFFFF",
+        "#D94A3F",
+        "#E754AF",
+        "#FF8135",
+        "#FFD700",
+        "#086C62",
+        "#5EBB55",
+        "#2F47ED",
+        "#4AD3D1",
+        "#8E2EC4",
+        "#7A7D7F",
+        "#656567",
+        "#D4C8C4",
+        "#2E2E2E",
+        "#000000"
+    ]
+}
